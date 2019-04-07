@@ -40,6 +40,11 @@ double element(void) {
         expectStream(c);
         f = vars[c - 'A'];
     }
+    else if (c >= 'a' && c <= 'z') { // a variable ?
+        expectStream(c);
+        f = vars[c - 'a'];
+    }
+
     else { // or a number?
         f = readNumber();
     }
@@ -89,6 +94,20 @@ double statement(void) { // read a statement
             ret = expression();
         }
     }
+    else if (c >= 'a' && c <= 'z') { // variable ?
+        expectStream(c);
+        if (nextByte() == '=') { // assignment ?
+            expectStream('=');
+            double val = expression();
+            vars[c - 'a'] = val;
+            ret = val;
+        }
+        else {
+            ungetc(c, stdin);
+            ret = expression();
+        }
+    }
+
     else {
         ret = expression();
     }
@@ -103,5 +122,7 @@ int main(void) {
         double v = statement();
         printf("%lf\n>> ", v); fflush(stdout);
     }
+
     return EXIT_SUCCESS;
 }
+
